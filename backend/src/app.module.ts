@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { envs } from './config/envs.config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
@@ -7,6 +7,9 @@ import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     // Conexión a MongoDB de forma asíncrona
     MongooseModule.forRootAsync({
       useFactory: () => ({
@@ -18,4 +21,4 @@ import { AuthModule } from './auth/auth.module';
     UsersModule, AuthModule
   ],
 })
-export class AppModule { }
+export class AppModule { };

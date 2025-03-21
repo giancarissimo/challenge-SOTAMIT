@@ -23,7 +23,10 @@ export class UsersService {
     // Se convierte "birthdate" de tipo string a formato Date
     const birthdate = new Date(createUserDto.birthdate);
 
-    const user = new this.userModel({ ...createUserDto, birthdate });
+    // Se aplica el hasheo a "password"
+    const password = createHash(createUserDto.password);
+
+    const user = new this.userModel({ ...createUserDto, birthdate, password });
     return user.save();
   };
 

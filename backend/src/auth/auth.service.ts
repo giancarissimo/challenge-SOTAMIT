@@ -3,7 +3,7 @@ import { UsersService } from '../users/users.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
-import { createHash, isValidPassword } from 'src/utils/bcrypt.util';
+import { isValidPassword } from 'src/utils/bcrypt.util';
 
 @Injectable()
 export class AuthService {
@@ -19,11 +19,8 @@ export class AuthService {
       throw new ConflictException({ category: 'register', message: 'User DNI already exist' });
     };
 
-    // Hashear contraseña usando nuestra función createHash
-    const hashedPassword = createHash(dto.password);
-
     // Creamos el usuario usando UsersService
-    const user = await this.usersService.createUser({ ...dto, password: hashedPassword });
+    const user = await this.usersService.createUser({ ...dto });
 
     return user;
   };
@@ -41,7 +38,7 @@ export class AuthService {
     };
 
     // Generar JWT
-    const payload = { sub: user?._id, email: user?.dni };
+    const payload = { sub: user?._id, dni: user?.dni };
     const token = await this.jwtService.signAsync(payload);
 
     return { token: token, user: user };

@@ -4,9 +4,26 @@ import { envs } from './config/envs.config';
 import { ValidationPipe } from '@nestjs/common';
 import { CustomExceptionFilter } from './common/exceptions/http-custom-exception.filter';
 import { ResponseTransformInterceptor } from './common/interceptors/response-transform-interceptors.filter';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Documentación de API y Schemas Dto con Swagger
+  const config = new DocumentBuilder()
+    .setTitle('Challenge SOTAMIT - API')
+    .setDescription('Documentación de los endpoints de la API y de los schemas Dto')
+    .setVersion('1.0')
+    .addBearerAuth() // Al utilizarse JWT, se agrega un botón para autenticarse en Swagger
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
+
+  // Habilitación de CORS para el frontend
+  app.enableCors({
+    origin: envs.frontend_url,
+    credentials: true,
+  });
 
   // Interceptor global para transformar las respuestas de éxito
   app.useGlobalInterceptors(new ResponseTransformInterceptor());
