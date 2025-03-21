@@ -11,6 +11,11 @@ En mi caso puse "nest new ./" para que el proyecto se inicalize dentro de la car
 ```Powershell
 npm i --save @nestjs/config
 ```
+### Variables de entorno
+```Powershell
+npm install --save dotenv
+npm install --save joi
+```
 
 ### Passport con Nestjs
 ```Powershell
