@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, MinLength, IsNumber, MaxLength, IsDateString, IsBoolean } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNotEmpty, IsString, MinLength, IsNumber, MaxLength, IsDateString, IsBoolean, IsOptional, IsIn } from 'class-validator';
 
 export class CreateUserDto {
   @ApiProperty({ description: 'Nombre del usuario', minLength: 2 })
@@ -46,4 +46,10 @@ export class CreateUserDto {
   @IsNotEmpty()
   @MinLength(8)
   password: string;
+
+  @ApiPropertyOptional({ description: 'Rol del usuario. Valores permitidos: "user" o "admin". Por defecto es "user".', enum: ['user', 'admin'], default: 'user' })
+  @IsOptional()
+  @IsString()
+  @IsIn(['user', 'admin'])
+  role?: string;
 };

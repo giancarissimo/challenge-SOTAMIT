@@ -28,6 +28,9 @@ export class User extends Document {
 
   @Prop({ required: true })
   password: string;
+
+  @Prop({ enum: ['user', 'admin'], default: 'user' })
+  role: string;
 };
 
 export type UserDocument = User & Document;

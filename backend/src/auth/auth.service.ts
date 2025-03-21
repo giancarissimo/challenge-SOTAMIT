@@ -1,26 +1,49 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/login.dto';
-import { UpdateAuthDto } from './dto/register.dto';
+import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { UsersService } from '../users/users.service';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
+import { JwtService } from '@nestjs/jwt';
+import { createHash, isValidPassword } from 'src/utils/bcrypt.util';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
+  ) { };
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+  async register(dto: RegisterDto) {
+    // Verificar si existe un usuario con ese DNI
+    const userExists = await this.usersService.findUserByDni(dto.dni);
+    if (userExists) {
+      throw new ConflictException({ category: 'register', message: 'User DNI already exist' });
+    };
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+    // Hashear contraseña usando nuestra función createHash
+    const hashedPassword = createHash(dto.password);
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
+    // Creamos el usuario usando UsersService
+    const user = await this.usersService.createUser({ ...dto, password: hashedPassword });
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
-  }
-}
+    return user;
+  };
+
+  async login(dto: LoginDto) {
+    // Se busca usuario por dni
+    const user = await this.usersService.findUserByDni(dto.dni);
+
+    if (!user) {
+      throw new ConflictException({ category: 'register', message: 'No data was provided' });
+    };
+
+    if (user?.dni !== dto.dni || !isValidPassword(dto.password, user)) {
+      throw new UnauthorizedException({ category: 'register', message: 'Invalid credentials' });
+    };
+
+    // Generar JWT
+    const payload = { sub: user?._id, email: user?.dni };
+    const token = await this.jwtService.signAsync(payload);
+
+    return { token: token, user: user };
+  };
+};

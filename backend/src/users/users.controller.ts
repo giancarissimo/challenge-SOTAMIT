@@ -1,34 +1,41 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
-@Controller('users')
+@Controller('api/users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { };
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  async createUser(@Body() createUserDto: CreateUserDto) {
+    const newUser = await this.usersService.createUser(createUserDto);
+    return { category: 'createUser', user: newUser };
+  };
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
+  async findAllUsers() {
+    const users = await this.usersService.findAllUsers();
+    return { category: 'findAllUsers', users: users };
+  };
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
-  }
+  async findUserById(@Param('id') id: string) {
+    const userFounded = await this.usersService.findUserById(id);
+    return { category: 'findUserById', user: userFounded };
+  };
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  async updateUserById(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    const updatedUser = await this.usersService.updateUserById(id, updateUserDto);
+    return { category: 'updateUserById', user: updatedUser };
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
-  }
-}
+  async removeUserById(@Param('id') id: string) {
+    const userRemoved = await this.usersService.removeUserById(id);
+    return { category: 'removeUserById', user: userRemoved };
+  };
+};
