@@ -40,6 +40,12 @@ npm i bcrypt
 npm install --save @types/bcrypt
 ```
 
+### Cookies
+```Powershell
+npm i cookie-parser
+npm i -D @types/cookie-parser
+```
+
 ### Documentación con swagger
 ```Powershell
 npm install --save @nestjs/swagger swagger-ui-express

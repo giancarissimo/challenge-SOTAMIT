@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import * as cookieParser from 'cookie-parser';
 import { envs } from './config/envs.config';
 import { ValidationPipe } from '@nestjs/common';
 import { CustomExceptionFilter } from './common/exceptions/http-custom-exception.filter';
@@ -8,6 +9,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(cookieParser());
 
   // Documentación de API y Schemas Dto con Swagger
   const config = new DocumentBuilder()

@@ -1,8 +1,11 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, UsePipes, ValidationPipe, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { SelfOrAdminGuard } from 'src/guards/userOrAdminAuthorizationGuard';
+import { AdminGuard } from 'src/guards/adminGuard';
 
 @ApiTags('Users')
 @Controller('api/users')
@@ -20,6 +23,7 @@ export class UsersController {
   };
 
   @Get()
+  @UseGuards(AuthGuard('jwt'), AdminGuard)
   @ApiOperation({ summary: 'Obtener el listado de usuarios' })
   @ApiResponse({ status: 200, description: 'Listado de usuarios obtenido correctamente.' })
   async findAllUsers() {
@@ -28,6 +32,7 @@ export class UsersController {
   };
 
   @Get(':id')
+  @UseGuards(AuthGuard('jwt'), AdminGuard)
   @ApiOperation({ summary: 'Obtener un usuario por su ID' })
   @ApiResponse({ status: 200, description: 'Usuario encontrado.' })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
@@ -37,6 +42,7 @@ export class UsersController {
   };
 
   @Patch(':id')
+  @UseGuards(AuthGuard('jwt'), SelfOrAdminGuard)
   @UsePipes(new ValidationPipe({ whitelist: true }))
   @ApiOperation({ summary: 'Actualizar un usuario por su ID' })
   @ApiResponse({ status: 200, description: 'Usuario actualizado exitosamente.' })
@@ -48,6 +54,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard('jwt'), SelfOrAdminGuard)
   @ApiOperation({ summary: 'Eliminar un usuario por su ID' })
   @ApiResponse({ status: 200, description: 'Usuario eliminado exitosamente.' })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })

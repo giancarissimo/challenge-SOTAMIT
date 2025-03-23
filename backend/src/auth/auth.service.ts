@@ -29,16 +29,12 @@ export class AuthService {
     // Se busca usuario por dni
     const user = await this.usersService.findUserByDni(dto.dni);
 
-    if (!user) {
-      throw new ConflictException({ category: 'register', message: 'No data was provided' });
-    };
-
     if (user?.dni !== dto.dni || !isValidPassword(dto.password, user)) {
-      throw new UnauthorizedException({ category: 'register', message: 'Invalid credentials' });
+      throw new UnauthorizedException({ category: 'login', message: 'Invalid credentials' });
     };
 
     // Generar JWT
-    const payload = { sub: user?._id, dni: user?.dni };
+    const payload = { sub: user?._id, dni: user?.dni, role: user?.role };
     const token = await this.jwtService.signAsync(payload);
 
     return { token: token, user: user };

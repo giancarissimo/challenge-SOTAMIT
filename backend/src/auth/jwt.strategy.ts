@@ -8,13 +8,13 @@ import { envs } from 'src/config/envs.config';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([(req: Request) => req.cookies['usercookie']]),
+      jwtFromRequest: ExtractJwt.fromExtractors([(req: Request) => (req && req.cookies ? req.cookies['usercookie'] : null),]),
       ignoreExpiration: false,
       secretOrKey: envs.jwt_secret,
-    })
+    });
   };
 
   async validate(payload: any) {
-    return { userId: payload.sub, dni: payload.dni };
+    return { userId: payload.sub, dni: payload.dni, role: payload.role };
   };
 };

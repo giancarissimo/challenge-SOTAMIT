@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, MinLength, IsNumber, MaxLength, IsDateString, IsBoolean, IsOptional, IsIn } from 'class-validator';
+import { IsNotEmpty, IsString, MinLength, Min, Max, IsNumber, MaxLength, IsDateString, IsBoolean, IsOptional, IsIn } from 'class-validator';
 
 export class CreateUserDto {
   @ApiProperty({ description: 'Nombre del usuario', minLength: 2 })
@@ -16,6 +16,8 @@ export class CreateUserDto {
 
   @ApiProperty({ description: 'Documento Nacional de Identidad (DNI) del usuario', minimum: 10000000, maximum: 999999999, type: Number })
   @IsNotEmpty()
+  @Min(10000000)
+  @Max(999999999)
   @IsNumber()
   dni: number;
 
@@ -29,11 +31,11 @@ export class CreateUserDto {
   @IsBoolean()
   is_developer: boolean;
 
-  @ApiProperty({ description: 'Descripción breve del usuario', minLength: 2, maxLength: 20 })
+  @ApiProperty({ description: 'Descripción breve del usuario', minLength: 2, maxLength: 50 })
   @IsNotEmpty()
   @IsString()
   @MinLength(2)
-  @MaxLength(20)
+  @MaxLength(50)
   description: string;
 
   @ApiProperty({ description: 'Área de trabajo del usuario', minLength: 2 })
