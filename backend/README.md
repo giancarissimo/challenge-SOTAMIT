@@ -63,6 +63,9 @@ nest g resource auth
 ### Nota
 Toda la iformación fue sacada de la documentación de [NestJs](https://docs.nestjs.com/).
 
+## Documentación
+La documentación está realizada en [Swagger](https://swagger.io/) con Nest. Para acceder a ella en el servidor, deben ir al endpoint ```/api/docs```
+
 ## Testings
 
 ### Testings E2E
