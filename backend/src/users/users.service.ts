@@ -4,7 +4,7 @@ import { isValidObjectId, Model } from 'mongoose';
 import { User, UserDocument } from './schema/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { createHash, isValidPassword } from 'src/utils/bcrypt.util';
+import { createHash, isValidPassword } from '../utils/bcrypt.util';
 
 @Injectable()
 export class UsersService {
@@ -26,8 +26,7 @@ export class UsersService {
     // Se aplica el hasheo a "password"
     const password = createHash(createUserDto.password);
 
-    const user = new this.userModel({ ...createUserDto, birthdate, password });
-    return user.save();
+    return this.userModel.create({ ...createUserDto, birthdate, password });
   };
 
   // Se retornan todos los usuarios

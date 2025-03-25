@@ -4,8 +4,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { SelfOrAdminGuard } from 'src/guards/userOrAdminAuthorizationGuard';
-import { AdminGuard } from 'src/guards/adminGuard';
+import { SelfOrAdminGuard } from '../guards/userOrAdminAuthorizationGuard';
+import { AdminGuard } from '../guards/adminGuard';
 
 @ApiTags('Users')
 @Controller('api/users')
