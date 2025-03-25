@@ -115,6 +115,19 @@ describe('UsersController (e2e)', () => {
   });
 
   afterAll(async () => {
+    // Logout para el usuario regular
+    await request(app.getHttpServer())
+      .post('/api/auth/logout')
+      .set('Cookie', [`usercookie=${userToken}`])
+      .expect(201);
+
+    // Logout para el admin
+    await request(app.getHttpServer())
+      .post('/api/auth/logout')
+      .set('Cookie', [`usercookie=${adminToken}`])
+      .expect(201);
+
+    // Al finalizar todos los testings, se elimina el usuario "admin" creado en el test
     await userModel.findOneAndDelete({ dni: adminData.dni })
     await app.close();
   });
@@ -130,17 +143,6 @@ describe('UsersController (e2e)', () => {
       expect(response.body).toHaveProperty('category', 'register');
       expect(response.body.message).toContain('User DNI already exist');
     });
-
-    // it('should fail to register with weak password', async () => {
-    //   const weakPasswordUser = { ...regularUserData, password: 'weak' };
-    //   const response = await request(app.getHttpServer())
-    //     .post('/api/auth/register')
-    //     .send(weakPasswordUser)
-    //     .expect(400);
-
-    //   expect(response.body).toHaveProperty('category', 'register');
-    //   expect(response.body.message).toContain('password is not strong enough');
-    // });
   });
 
   // Negative Login Tests

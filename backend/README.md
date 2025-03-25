@@ -1,86 +1,102 @@
 # Challenge SOTAMIT - Backend
-Documentación del backend para el challenge.
 
-## Todos los paquetes de instalación que se utilizaron
+## Introducción
+Esta aplicación fue desarrollada siguiendo los requerimientos del challenge, sin embargo, identifiqué algunos aspectos en la consigna que dejaban ciertos espacios en blanco en términos de seguridad y buenas prácticas en el desarrollo.
 
-### Para inicializar el proyecto de Nestjs
-```Powershell
-npm i -g @nestjs/cli
-nest new project-name
-```
-En mi caso puse "nest new ./" para que el proyecto se inicalize dentro de la carpeta de backend sin necesidad de crear otra.
+## Motivación y Mejoras Propuestas
+En la especificación original se solicitaba desarrollar:
 
-### Configs de Nestjs
-```Powershell
-npm i --save @nestjs/config
-```
-### Variables de entorno
-```Powershell
-npm install --save dotenv
-npm install --save joi
-```
+![Screenshot del challenge](./public/assets/images/challenge-screen-sentence.jpeg)
 
-### Passport con Nestjs
-```Powershell
-npm install --save @nestjs/passport
-npm install --save @nestjs/jwt passport-jwt
-npm install --save-dev @types/passport-jwt
-```
+Consideré que permitir el acceso libre a la lista completa de empleados, sin ningún mecanismo de seguridad, representaba un riesgo al exponer la información sensible de la base de datos. Para solucionar esto, implementé un sistema de autenticación y autorización con las siguientes mejoras:
 
-### Mongoose con Nestjs
-```Powershell
-npm i @nestjs/mongoose mongoose
-```
+* #### Sistema de Login y Registro:
+  + Se incorporó un formulario de registro y login para garantizar que solo usuarios autenticados puedan acceder a las rutas protegidas y realizar acciones sobre los datos.
 
-### Validaciones
-```Powershell
-npm i --save class-validator class-transformer
-```
+* #### Control de Acceso Basado en Roles:
+  + El sistema distingue entre administradores y usuarios normales.
+  + Las funciones de eliminación, actualización y búsqueda de empleados son restringidas a administradores.
+  + Se permite que un usuario normal pueda actualizar únicamente su propio perfil o eliminar su propia cuenta.
+  + Gestionado mediante los guards ```AdminGuard``` y ```SelfOrAdminGuard```, que verifican la autorización del usuario antes de ejecutar la operación solicitada.
 
-### Hashing de contraseña
-```Powershell
-npm i bcrypt
-npm install --save @types/bcrypt
-```
+## Flujo de Uso de la Aplicación
 
-### Cookies
-```Powershell
-npm i cookie-parser
-npm i -D @types/cookie-parser
+Al intentar acceder a los endpoints protegidos sin autenticación, la aplicación retorna un error indicando que el usuario no está autenticado (por falta de cookie o token).
+
+Se recomienda registrar primero un usuario administrador a través de ```/api/auth/register``` y luego registrar uno o más usuarios normales.
+
+Al iniciar sesión con un usuario normal a través de ```/api/auth/login``` se puede interactuar únicamente con sus propios datos, impidiendo acciones como eliminar otros usuarios o actualizarlos.
+
+Iniciar sesión como administrador permite gestionar todos los usuarios, lo que respalda la administración centralizada de la aplicación.
+
+Con estas mejoras, se garantiza una mayor seguridad y se promueve una gestión de usuarios más robusta, alineándose con buenas prácticas en el desarrollo de aplicaciones web.
+
+#### Nota:
+Para más información sobre los endpoints existentes, realicé la documentación con [Swagger](https://swagger.io/) aplicada a Nest. Para acceder a ella en el servidor, deben ir al endpoint ```/api/docs```
+
+## Instalación y Configuración
+
+### Requisitos Previos
+  * Tener instalado [NodeJs](https://nodejs.org/en)
+  * Utilizar ```npm``` o ```yarn```
+
+### Instalación de Dependencias
+
+1. Clonar el repositorio:
+```Bash
+git clone https://github.com/giancarissimo/challenge-SOTAMIT.git
 ```
 
-### Documentación con swagger
-```Powershell
-npm install --save @nestjs/swagger swagger-ui-express
+2. Instalar las dependencias:
+```Bash
+cd backend
+npm install
 ```
 
-### Para inicializar el CRUD de usuarios y auth
-```Powershell
-nest g resource users
-nest g resource auth
+### Configuración de Variables de Entorno
+El proyecto utiliza variables de entorno para gestionar información sensible (por ejemplo, conexión a la base de datos, claves de API, etc.). Para configurar estas variables:
+
+1. Crear un archivo ```.env``` en la raíz del proyecto.
+
+2. Copiar el contenido al ```.env``` que creamos:
+
+```env
+PORT=5000 # O el port que quieran
+FRONTEND_URL='http://localhost:3000' # O una url para front
+MONGO_URI= # Una URI valida de mongodb, perefiblemente que el link refleje que la conexión se va a a hacer sobre una colección en particular y no sobre todo el Cluster de Mongodb
+JWT_SECRET= # Por ej 'secret-token'
+JWT_EXPIRES_IN= # Por ej '3600s'
+```
+3. Ajustar las variables mencionadas según corresponda.
+
+### Inicialización del Servidor
+Para iniciar el servidor, ejecutar:
+
+```bash
+npm run start
 ```
 
-### Nota
-Toda la iformación fue sacada de la documentación de [NestJs](https://docs.nestjs.com/).
+Si se necesita realizar cambios en uno o varios archivos sin cerrar el servidor (modo de desarrollo), ejecutar:
 
-## Documentación
-La documentación está realizada en [Swagger](https://swagger.io/) con Nest. Para acceder a ella en el servidor, deben ir al endpoint ```/api/docs```
+```bash
+npm run start:dev
+```
+
+Una vez iniciado, se podrá acceder a la aplicación en ```http://localhost:5000```.
 
 ## Testings
 
-### Testings E2E
+### Testing E2E
 
-* #### Auth Testing:
+* #### App testing:
   + Testing de registro con datos válidos e inválidos.
   + Testing de inicio de sesión con credenciales correctas e incorrectas.
   + Testing de la funcionalidad de cierre de sesión y la gestión de cookies.
-
-* #### Users Testing:
   + Testing de operaciones CRUD con autenticación.
   + Testing de restricciones de acceso basadas en roles.
   + Testing de reglas de validación y gestión de errores.
 
-### Spec Testings:
+### Spec Testings
 
 * #### Auth Service Testing:
   + Testing de la lógica de registro de usuarios.
@@ -104,7 +120,7 @@ La documentación está realizada en [Swagger](https://swagger.io/) con Nest. Pa
 ### Ejecución de Testings
 
 #### Testing Unitarios:
-  + En la consola, ejecutar el comando ```npm run test.```
+  + En la consola, ejecutar el comando ```npm run test```.
 
 #### Testing de Extremo a Extremo:
-  + En la consola, ejecutar el comando ```npm run test:e2e```
+  + En la consola, ejecutar el comando ```npm run test:e2e```.
