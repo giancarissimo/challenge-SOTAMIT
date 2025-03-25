@@ -43,7 +43,7 @@ Utilizar alguna librería moderna para realizar pruebas unitarias y/o funcionale
 
 ## Tecnologías utilizadas
 
-* Frontend: Vite. ReactJs. Tailwindcss. Typescript. React-Hook-Form.
+* Frontend: Vite. ReactJs. Tailwindcss. Typescript. Zustand. React-Router-Dom. React-Hook-Form.
 * Bakcend: Nestjs. Typecript. MongoDb. Passport-jwt.
 
 ### Nota
