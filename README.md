@@ -41,6 +41,13 @@ Nivel 5: Testeo automático
 
 Utilizar alguna librería moderna para realizar pruebas unitarias y/o funcionales de todo el código desarrollado.
 
+## Obtención del repositorio
+Pararse en la consola de comandos y ejecutar:
+
+```bash
+git clone https://github.com/giancarissimo/challenge-SOTAMIT.git
+```
+
 ## Tecnologías utilizadas
 
 * Frontend: Vite. ReactJs. Tailwindcss. Typescript. Zustand. React-Router-Dom. React-Hook-Form.

@@ -41,15 +41,15 @@ Para más información sobre los endpoints existentes, realicé la documentació
   * Utilizar ```npm``` o ```yarn```
 
 ### Instalación de Dependencias
+1. Abrir la consola de comandos a través de ```cntrl + ñ```
 
-1. Clonar el repositorio:
-```Bash
-git clone https://github.com/giancarissimo/challenge-SOTAMIT.git
+2. Ir a la carpeta de ```/backend```
+```bash
+cd backend
 ```
 
-2. Instalar las dependencias:
+3. Instalar las dependencias:
 ```Bash
-cd backend
 npm install
 ```
 
@@ -63,11 +63,14 @@ El proyecto utiliza variables de entorno para gestionar información sensible (p
 ```env
 PORT=5000 # O el port que quieran
 FRONTEND_URL='http://localhost:3000' # O una url para front
-MONGO_URI= # Una URI valida de mongodb, perefiblemente que el link refleje que la conexión se va a a hacer sobre una colección en particular y no sobre todo el Cluster de Mongodb
+MONGO_URI= 'mongodb+srv://<tu_nombre_de_usuario>:<contraseña_del_usuario_asignado_a_la_base_de_datos>@cluster0.ckbgdx2.mongodb.net/<nombre_de_la_base_de_datos>?retryWrites=true&w=majority&appName=Cluster0'
 JWT_SECRET= # Por ej 'secret-token'
 JWT_EXPIRES_IN= # Por ej '3600s'
 ```
 3. Ajustar las variables mencionadas según corresponda.
+
+#### Nota:
+Para la Uri de Mongodb, se debe reemplazar lo que está entre ```<>``` por el dato correspondiente. Por ejemplo de '<nombre_de_usuario>' a 'nombredeusuario'.
 
 ### Inicialización del Servidor
 Para iniciar el servidor, ejecutar:
