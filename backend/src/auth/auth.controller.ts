@@ -1,9 +1,10 @@
-import { Body, Controller, Post, Res, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { Response as ResType } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Auth')
 @Controller('api/auth')
@@ -32,11 +33,22 @@ export class AuthController {
       maxAge: 3600000,
       httpOnly: true,
       secure: false, // Solo 'true' en producción con HTTPS
-      sameSite: 'none',
+      sameSite: 'lax',
     });
 
     const user = data.user;
     return { category: 'login', user };
+  };
+
+  @Get('profile')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({ summary: 'Muestra los datos del usuario' })
+  @ApiResponse({ status: 200, description: 'Muestra los datos del usuario' })
+  @ApiResponse({ status: 401, description: 'No autorizado' })
+  async showProfile(@Req() req: Request) {
+    const user = await this.authService.profile(req);
+
+    return { category: 'profile', user };
   };
 
   @Post('logout')
@@ -47,7 +59,7 @@ export class AuthController {
       expires: new Date(0),
       httpOnly: true,
       secure: false,
-      sameSite: 'none'
+      sameSite: 'lax'
     });
     return { category: 'logout' };
   };

@@ -14,9 +14,9 @@ export class CreateUserDto {
   @MinLength(2)
   last_name: string;
 
-  @ApiProperty({ description: 'Documento Nacional de Identidad (DNI) del usuario', minimum: 10000000, maximum: 999999999, type: Number })
+  @ApiProperty({ description: 'Documento Nacional de Identidad (DNI) del usuario', minimum: 1000000, maximum: 999999999, type: Number })
   @IsNotEmpty()
-  @Min(10000000)
+  @Min(1000000)
   @Max(999999999)
   @IsNumber()
   dni: number;

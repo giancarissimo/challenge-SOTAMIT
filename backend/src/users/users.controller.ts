@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, UsePipes, ValidationPipe, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, UsePipes, ValidationPipe, UseGuards, Res } from '@nestjs/common';
+import { Response as ResType } from 'express';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -58,8 +59,14 @@ export class UsersController {
   @ApiOperation({ summary: 'Eliminar un usuario por su ID' })
   @ApiResponse({ status: 200, description: 'Usuario eliminado exitosamente.' })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
-  async removeUserById(@Param('id') id: string) {
+  async removeUserById(@Param('id') id: string, @Res({ passthrough: true }) res: ResType) {
     const userRemoved = await this.usersService.removeUserById(id);
+    res.cookie('usercookie', "", {
+      expires: new Date(0),
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax'
+    });
     return { category: 'removeUserById', user: userRemoved };
   };
 };

@@ -66,48 +66,35 @@ export class UsersService {
       throw new NotFoundException({ category: 'updateUserById', message: `User with the id ${id} was not found` });
     };
 
+    // Si hay usuario, pero el usuario no manda ningun objeto a actualizar, tiramos error
     if (!updateUserDto || Object.keys(updateUserDto).length === 0) {
       throw new BadRequestException({ category: 'updateUserById', message: 'No data was provided' });
     };
 
-    // Se convierte el usuario de MongoDb a objeto para compararlo
-    const userPlain = userToUpdate.toObject();
+    // Se excluye 'password' del objeto updateUserDto
+    const { password, ...updateData } = updateUserDto;
 
-    // Se clona el DTO para compararlo sin afectar el original y excluir la contraseña
-    const filteredUpdateDto = { ...updateUserDto };
-    delete filteredUpdateDto.password;
-    delete filteredUpdateDto.birthdate;
+    const updatedUser = await this.userModel.findByIdAndUpdate(id, updateData, { new: true, });
+    if (!updatedUser) {
+      throw new NotFoundException({ category: 'updateUserById', message: `User with the id ${id} was not found` });
+    };
+    return updatedUser;
+  };
 
-    // Se compara cada propiedad enviada en filteredUpdateDto con el valor correspondiente en el objeto almacenado
-    const isSameData = Object.entries(filteredUpdateDto).some(([key, value]) => {
-      return userPlain[key] === value;
-    });
-
-    // Si no hay cambios en las propiedades, no se realiza la actualización
-    if (isSameData) {
-      throw new BadRequestException({ category: 'updateUserById', message: 'The data to update is the same as in MongoDB' });
+  async updateUserPsasword(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    // Si queremos testear con un _id de mongodb con menos (o más) de 24 caracteres, nos va a tirar error porque no es un id válido.
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException({ category: 'updateUserById', message: `Invalid format: The objectId ${id} must have 24 hex characters` });
     };
 
-    // Se valida la propiedad "birthdate" si se envía
-    if (updateUserDto.birthdate) {
-      if (userPlain.birthdate) {
-        let mongoBirthdateISO: string;
-        if (userPlain.birthdate instanceof Date) {
-          mongoBirthdateISO = userPlain.birthdate.toISOString().split('T')[0];
-        } else if (typeof userPlain.birthdate === 'string') {
-          // Forzamos que TS trate el valor como string
-          mongoBirthdateISO = new Date(userPlain.birthdate as string).toISOString().split('T')[0];
-        } else {
-          mongoBirthdateISO = '';
-        };
+    // Se busca un usuario en la base de datos con el id que mandamos
+    const userToUpdate = await this.userModel.findById(id)
+    if (!userToUpdate) {
+      throw new NotFoundException({ category: 'updateUserById', message: `User with the id ${id} was not found` });
+    };
 
-        // Se convierte la fecha del DTO a ISO y se extrae solo la parte de "YYYY-MM-DD"
-        const dtoBirthdateISO = new Date(updateUserDto.birthdate as string).toISOString().split('T')[0];
-
-        if (mongoBirthdateISO === dtoBirthdateISO) {
-          throw new BadRequestException({ category: 'updateUserById', message: 'The birthdate to update is the same as in MongoDB' });
-        };
-      };
+    if (!updateUserDto || Object.keys(updateUserDto).length === 0) {
+      throw new BadRequestException({ category: 'updateUserById', message: 'No data was provided' });
     };
 
     // Se valida la propiedad "passowrd" si se envía
